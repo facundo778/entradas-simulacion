@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulación de Compra de Entradas</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom styles for Inter font */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Basic styling for the message box */
+        .message-box {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #fefcbf; /* Yellow-ish background */
+            color: #92400e; /* Dark brown text */
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            text-align: center;
+            display: none; /* Hidden by default */
+            border: 1px solid #d97706; /* Orange border */
+        }
+        .message-box button {
+            margin-top: 1rem;
+            background-color: #f59e0b; /* Orange button */
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .message-box button:hover {
+            background-color: #d97706; /* Darker orange on hover */
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen p-4">
+
+    <!-- Mensaje de simulación -->
+    <div id="simulation-message" class="message-box">
+        <p class="text-lg font-semibold">¡Esto es solo una simulación!</p>
+        <p class="mt-2 text-sm">No se realizará ninguna compra real ni se procesará ningún pago.</p>
+        <button onclick="hideMessageBox()">Entendido</button>
+    </div>
+
+    <div class="bg-white p-8 rounded-xl shadow-lg w-full max-w-md">
+        <h1 class="text-3xl font-bold text-gray-800 mb-6 text-center">Entradas para el Concierto de Arnold Schwarzenegger</h1>
+
+        <!-- Imagen del concierto -->
+        <div class="mb-6">
+            <img src="https://placehold.co/400x250/1f2937/f9fafb?text=Concierto+de+Arnold" alt="Concierto de Arnold Schwarzenegger" class="rounded-lg w-full h-auto object-cover">
+        </div>
+
+        <!-- Detalles del evento -->
+        <div class="text-gray-700 mb-6">
+            <p class="text-lg font-semibold">Fecha: 23 de Agosto</p>
+            <p class="text-lg font-semibold">Hora: 23:00</p>
+            <p class="text-lg font-semibold">Lugar: Stadium Drive 1001, Inglewood, California</p>
+            <p class="text-2xl font-bold text-indigo-600 mt-4">Precio por entrada: $50.00</p>
+        </div>
+
+        <!-- Selector de cantidad -->
+        <div class="flex items-center justify-between mb-6 bg-gray-50 p-4 rounded-lg border border-gray-200">
+            <label for="quantity" class="text-gray-700 font-medium text-lg">Cantidad:</label>
+            <div class="flex items-center space-x-3">
+                <button id="decrease-qty" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors duration-200 text-xl font-bold">-</button>
+                <input type="number" id="quantity" value="1" min="1" class="w-20 text-center text-xl font-semibold border border-gray-300 rounded-lg py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500" readonly>
+                <button id="increase-qty" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors duration-200 text-xl font-bold">+</button>
+            </div>
+        </div>
+
+        <!-- Total a pagar -->
+        <div class="flex justify-between items-center bg-indigo-50 p-4 rounded-lg mb-6 border border-indigo-200">
+            <span class="text-xl font-bold text-indigo-800">Total:</span>
+            <span id="total-price" class="text-2xl font-extrabold text-indigo-800">$50.00</span>
+        </div>
+
+        <!-- Botón de "Comprar" -->
+        <button id="buy-button" class="w-full bg-indigo-600 text-white py-3 rounded-lg text-xl font-bold hover:bg-indigo-700 transition-colors duration-300 shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+            Simular Compra
+        </button>
+    </div>
+
+    <script>
+        const pricePerTicket = 50.00; // Precio por entrada
+        const quantityInput = document.getElementById('quantity');
+        const totalPriceSpan = document.getElementById('total-price');
+        const decreaseQtyButton = document.getElementById('decrease-qty');
+        const increaseQtyButton = document.getElementById('increase-qty');
+        const buyButton = document.getElementById('buy-button');
+        const simulationMessageBox = document.getElementById('simulation-message');
+
+        // Función para actualizar el precio total
+        function updateTotalPrice() {
+            const quantity = parseInt(quantityInput.value);
+            const total = quantity * pricePerTicket;
+            totalPriceSpan.textContent = `$${total.toFixed(2)}`;
+        }
+
+        // Event Listeners para los botones de cantidad
+        decreaseQtyButton.addEventListener('click', () => {
+            let currentQty = parseInt(quantityInput.value);
+            if (currentQty > 1) {
+                quantityInput.value = currentQty - 1;
+                updateTotalPrice();
+            }
+        });
+
+        increaseQtyButton.addEventListener('click', () => {
+            let currentQty = parseInt(quantityInput.value);
+            quantityInput.value = currentQty + 1;
+            updateTotalPrice();
+        });
+
+        // Event Listener para el botón de compra
+        buyButton.addEventListener('click', () => {
+            const quantity = parseInt(quantityInput.value);
+            const total = (quantity * pricePerTicket).toFixed(2);
+            showMessageBox(`¡Simulación Exitosa!\nHas "comprado" ${quantity} entrada(s) por un total de $${total}.`);
+        });
+
+        // Función para mostrar el mensaje de simulación
+        function showMessageBox(message) {
+            const messageBoxContent = simulationMessageBox.querySelector('p:first-child');
+            const messageBoxSubContent = simulationMessageBox.querySelector('p:last-child');
+            messageBoxContent.textContent = message.split('\n')[0];
+            messageBoxSubContent.textContent = message.split('\n')[1] || ''; // Handle single line messages
+            simulationMessageBox.style.display = 'block';
+        }
+
+        // Función para ocultar el mensaje de simulación
+        function hideMessageBox() {
+            simulationMessageBox.style.display = 'none';
+        }
+
+        // Mostrar el mensaje de simulación al cargar la página
+        window.onload = function() {
+            showMessageBox("¡Esto es solo una simulación!\nNo se realizará ninguna compra real ni se procesará ningún pago.");
+        };
+
+        // Inicializar el precio total al cargar la página
+        updateTotalPrice();
+    </script>
+</body>
+</html>
